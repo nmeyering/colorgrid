@@ -3,7 +3,8 @@ from board import Board
 from term import *
 
 def game():
-	board = Board( block_char='\u2592')
+#	board = Board( block_char='\u2592')
+	board = Board()
 
 	instructions = '''
 The goal is to flood-fill the whole board with the same color.
@@ -17,7 +18,7 @@ Good luck!
 	menu = '\033[s\033[{}A'.format(
 		board.size + 1)
 
-	for c in range(len(colors)):
+	for c in range(board.max_colors):
 		menu += '\033[{indent}C{idx}: {val}\n'.format(
 			indent = 1 + 2 * board.size,
 			idx = c,
