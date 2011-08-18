@@ -7,24 +7,21 @@ colors = [
 ,"green"
 ,"yellow"
 ,"blue"
-,"magenta"]
-
-"""
-#the original game only has 6 colors...
+,"magenta"
 ,"cyan"
 ,"white"]
-"""
 
 class Board:
-	def __init__(self, size=14, cols=6, block_char='\u2588'):
+	def __init__(self, size=14, max_colors=6, block_char='\u2588'):
 		self.size = size
 		self.block_char = block_char
 		self.field = []
+		self.max_colors = max_colors
 		for y in range(self.size):
 			self.field.append([])
 			for x in range(self.size):
 				self.field[y].append(
-					random.randrange(cols))
+					random.randrange(max_colors))
 
 	def uniform(self):
 		c = self.field[0][0]
@@ -35,7 +32,7 @@ class Board:
 		return True
 
 	def flood(self, col):
-		if not col in range(len(colors)):
+		if col not in range(self.max_colors):
 			raise AttributeError('Invalid color!')
 
 		old = self.field[0][0]
@@ -48,19 +45,19 @@ class Board:
 			y = 0)
 
 	def _flood(self, old_color, color, x, y):
+		#TODO: use a more efficient flood fill algorithm
+		#this naïve approach runs out of stack at a grid size of about 35
+		if x not in range(self.size) or y not in range(self.size):
+			return
+		if not self.field[y][x] == old_color:
+			return
 		self.field[y][x] = color
 		for neighbor in range(4):
 			#left, right, up, down:
 			#should yield (-1,0), (1,0), (0,-1), (0,1)
 			dx = 2 * (neighbor % 2) - 1 if neighbor < 2 else 0
 			dy = 2 * (neighbor % 2) - 1 if neighbor >= 2 else 0
-
-			ret = False
-			if x + dx in range(self.size) and y + dy in range(self.size):
-				if self.field[y + dy][x + dx] == old_color:
-					ret = True
-					self._flood(old_color, color, x + dx, y + dy)
-		return ret
+			self._flood(old_color, color, x + dx, y + dy)
 
 	def __str__(self):
 		ret = ''
@@ -95,6 +92,8 @@ def game():
 
 	turnlimit = 25
 	turn = 0
+
+
 	while turn < turnlimit:
 		print(board)
 		print(instructions)
@@ -112,7 +111,11 @@ def game():
 				return False
 		if board.uniform():
 			print('Congratulations, you won!')
-			return not input('Play again? [Y/n] ').lower() == 'n'
+			break
+
+	if turn == turnlimit:
+		print('Too bad, you lost.')
+	return not input('Play again? [Y/n] ').lower() == 'n'
 
 def main():
 	while game():
