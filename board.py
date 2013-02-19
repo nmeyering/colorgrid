@@ -1,5 +1,5 @@
 import random
-from term import *
+import term
 
 class Board:
 	def __init__(self, size=14, max_colors=6, block_char='\u2588'):
@@ -36,7 +36,6 @@ class Board:
 
 	def _flood(self, old_color, color, x, y):
 		#TODO: use a more efficient flood fill algorithm
-		#this naïve approach runs out of stack at a grid size of about
 		if x not in range(self.size) or y not in range(self.size):
 			return
 		if not self.field[y][x] == old_color:
@@ -53,10 +52,10 @@ class Board:
 		ret = ''
 		for y in range(self.size):
 			for x in range(self.size):
-				ret += colored(
-												#full block
-												'{c}{c}'.format(
-													c = self.block_char),
-												self.field[y][x])
+				ret += term.colored(
+					#full block
+					'{c}{c}'.format(
+						c = self.block_char),
+					self.field[y][x])
 			ret += '\n'
 		return ret
